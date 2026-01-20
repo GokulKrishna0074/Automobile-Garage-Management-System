@@ -10,9 +10,9 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/services", serviceRoutes);
 
-mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.log(err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.error(err));
 
 app.get("/", (req, res) => {
   res.send("Garage Management Backend Running");
