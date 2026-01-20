@@ -1,3 +1,4 @@
+require("dotenv").config();
 const serviceRoutes = require("./routes/serviceRoutes");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -9,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/services", serviceRoutes);
 
-mongoose.connect("mongodb://127.0.0.1:27017/garageDB")
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.log(err));
 
