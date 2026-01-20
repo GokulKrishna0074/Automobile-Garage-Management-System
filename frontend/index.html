@@ -151,9 +151,9 @@
 </div>
 
 <script>
-const API = "http://localhost:5000/api/services";
+const API = "https://garage-backend-v5iv.onrender.com/api/services";
 
-/* LOAD SERVICES */
+
 async function loadServices() {
   const res = await fetch(API);
   const services = await res.json();
