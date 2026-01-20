@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Garage Management System</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 8px;
+      padding: 7px 12px;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .add-btn { background: #007bff; }
+    .add-btn:hover { background: #0056b3; }
+
+    .done-btn { background: #28a745; }
+    .done-btn:hover { background: #1e7e34; }
+
+    .billing-btn { background: #6f42c1; }
+    .billing-btn:hover { background: #59339d; }
+
+    .paid-btn { background: #17a2b8; }
+    .paid-btn:hover { background: #117a8b; }
+
+    .delete-btn { background: #dc3545; }
+    .delete-btn:hover { background: #b02a37; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    .pending {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .completed {
+      color: green;
+      font-weight: bold;
+    }
+
+    .paid {
+      color: green;
+      font-weight: bold;
+    }
+
+    .unpaid {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🚗 Automobile Garage Management System</h1>
+
+  <!-- ADD SERVICE -->
+  <div class="card">
+    <h3>Add Service</h3>
+
+    <div class="form-grid">
+      <input id="ownerName" placeholder="Owner Name">
+      <input id="vehicleNumber" placeholder="Vehicle Number">
+      <input id="vehicleType" placeholder="Vehicle Type">
+      <input id="serviceType" placeholder="Service Type">
+    </div>
+
+    <button class="add-btn" onclick="addService()">Add Service</button>
+  </div>
+
+  <!-- SERVICE LIST -->
+  <div class="card">
+    <h3>Service Records</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Owner</th>
+          <th>Vehicle No</th>
+          <th>Vehicle Type</th>
+          <th>Service</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="serviceTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const API = "http://localhost:5000/api/services";
+
+/* LOAD SERVICES */
+async function loadServices() {
+  const res = await fetch(API);
+  const services = await res.json();
+  const table = document.getElementById("serviceTable");
+
+  table.innerHTML = "";
+
+  services.forEach(s => {
+    const statusClass = s.status === "Completed" ? "completed" : "pending";
+    const paymentClass = s.paymentStatus === "Paid" ? "paid" : "unpaid";
+
+    table.innerHTML += `
+      <tr>
+        <td>${s.ownerName}</td>
+        <td>${s.vehicleNumber}</td>
+        <td>${s.vehicleType}</td>
+        <td>${s.serviceType}</td>
+        <td class="${statusClass}">${s.status}</td>
+        <td>₹${s.totalAmount || 0}</td>
+        <td class="${paymentClass}">${s.paymentStatus || "Unpaid"}</td>
+        <td>
+
+  <!-- MARK DONE -->
+  ${s.status === "Pending"
+    ? `<button class="done-btn" onclick="markDone('${s._id}')">Mark Done</button>`
+    : ""}
+
+  <!-- ADD BILLING (ONLY AFTER COMPLETED & NOT PAID) -->
+  ${s.status === "Completed" && s.paymentStatus !== "Paid"
+    ? `<button class="billing-btn" onclick="addBilling('${s._id}')">Add Billing</button>`
+    : ""}
+
+  <!-- MARK PAID (ONLY IF UNPAID & BILL EXISTS) -->
+  ${s.paymentStatus === "Unpaid" && (s.totalAmount || 0) > 0
+    ? `<button class="paid-btn" onclick="markPaid('${s._id}')">Mark Paid</button>`
+    : s.paymentStatus === "Paid"
+      ? "✔"
+      : ""}
+
+  <!-- DELETE (ALWAYS ALLOWED) -->
+  <button class="delete-btn" onclick="deleteService('${s._id}')">
+    Delete
+  </button>
+
+</td>
+      </tr>
+    `;
+  });
+}
+
+/* ADD SERVICE */
+async function addService() {
+  const service = {
+    ownerName: ownerName.value,
+    vehicleNumber: vehicleNumber.value,
+    vehicleType: vehicleType.value,
+    serviceType: serviceType.value
+  };
+
+  await fetch(API + "/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(service)
+  });
+
+  ownerName.value = "";
+  vehicleNumber.value = "";
+  vehicleType.value = "";
+  serviceType.value = "";
+
+  loadServices();
+}
+
+/* MARK DONE */
+async function markDone(id) {
+  await fetch(API + "/update/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "Completed" })
+  });
+
+  loadServices();
+}
+
+/* ADD BILLING */
+async function addBilling(id) {
+  const serviceCharge = prompt("Enter service charge:");
+  const partsCost = prompt("Enter parts cost:");
+
+  if (serviceCharge === null || partsCost === null) return;
+
+  const totalAmount = Number(serviceCharge) + Number(partsCost);
+
+  await fetch(API + "/update/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      serviceCharge,
+      partsCost,
+      totalAmount,
+      paymentStatus: "Unpaid"
+    })
+  });
+
+  loadServices();
+}
+
+/* MARK PAID */
+async function markPaid(id) {
+  await fetch(API + "/update/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentStatus: "Paid" })
+  });
+
+  loadServices();
+}
+
+/* DELETE SERVICE */
+async function deleteService(id) {
+  if (!confirm("Are you sure you want to delete this service?")) return;
+
+  await fetch(API + "/delete/" + id, {
+    method: "DELETE"
+  });
+
+  loadServices();
+}
+
+loadServices();
+</script>
+
+</body>
+</html>
