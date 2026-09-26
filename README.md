@@ -6,14 +6,14 @@ The application allows garage staff to manage customers, vehicles, appointments,
 
 ## Features
 
-- Dashboard – View key information such as total customers, vehicles, appointments, service records, invoices, and revenue.
-- Customer Management – Add, view, update, and delete customer records.
-- Vehicle Management – Manage vehicle details and associate vehicles with customers.
-- Appointment Management – Create and manage service appointments, including date, time, description, and status.
-- Service Record Management – Maintain service history with service type, description, service date, labor cost, parts cost, and status.
-- Invoice Management – Create and manage invoices associated with service records.
-- Payment Management – Record payment details, payment method, payment status, and transaction reference.
-- Validation & Exception Handling – Includes request validation and backend exception handling for reliable API operations.
+- **Dashboard** – View key information such as total customers, vehicles, appointments, service records, invoices, and revenue.
+- **Customer Management** – Add, view, update, and delete customer records.
+- **Vehicle Management** – Manage vehicle details and associate vehicles with customers.
+- **Appointment Management** – Create and manage service appointments, including date, time, description, and status.
+- **Service Record Management** – Maintain service history with service type, description, service date, labor cost, parts cost, and status.
+- **Invoice Management** – Create and manage invoices associated with service records.
+- **Payment Management** – Record payment details, payment method, payment status, and transaction reference.
+- **Validation & Exception Handling** – Includes request validation and backend exception handling for reliable API operations.
 
 ## Technology Stack
 
@@ -46,17 +46,19 @@ The application allows garage staff to manage customers, vehicles, appointments,
 
 ## Application Workflow
 
+```text
 Customer
-↓
+   ↓
 Vehicle
-↓
+   ↓
 Appointment
-↓
+   ↓
 Service Record
-↓
+   ↓
 Invoice
-↓
+   ↓
 Payment
+```
 
 The workflow connects the major operations of a garage, allowing customer and vehicle information to be maintained throughout the service and billing process.
 
@@ -64,18 +66,21 @@ The workflow connects the major operations of a garage, allowing customer and ve
 
 The backend follows a layered architecture:
 
+```text
 Controller
-↓
+    ↓
 Service
-↓
+    ↓
 Repository
-↓
+    ↓
 Database
+```
 
 The React frontend communicates with the Spring Boot backend through REST APIs.
 
 ## Project Structure
 
+```text
 Automobile-Garage-Management-System
 │
 ├── backend
@@ -103,18 +108,19 @@ Automobile-Garage-Management-System
     │
     ├── package.json
     └── vite.config.js
+```
 
 ## REST API
 
 | Module | Endpoint |
 |---|---|
-| Customers | /customers |
-| Vehicles | /vehicles |
-| Appointments | /appointments |
-| Service Records | /service-records |
-| Invoices | /invoices |
-| Payments | /payments |
-| Dashboard | /dashboard |
+| Customers | `/customers` |
+| Vehicles | `/vehicles` |
+| Appointments | `/appointments` |
+| Service Records | `/service-records` |
+| Invoices | `/invoices` |
+| Payments | `/payments` |
+| Dashboard | `/dashboard` |
 
 The backend provides CRUD operations for the main application modules and uses DTOs, validation, service classes, repositories, and entity relationships to manage the data.
 
@@ -131,26 +137,32 @@ The backend provides CRUD operations for the main application modules and uses D
 
 Create the MySQL database:
 
+```sql
 CREATE DATABASE garage_db;
+```
 
-Configure your local database credentials in application.properties.
+Configure your local database credentials in `application.properties`.
 
 Run the backend:
 
+```powershell
 cd backend/garage-backend
 .\mvnw.cmd spring-boot:run
+```
 
-Backend: http://localhost:8080
+Backend: `http://localhost:8080`
 
 ### Frontend
 
 Open another terminal:
 
+```powershell
 cd frontend
 npm install
 npm run dev
+```
 
-Frontend: http://localhost:5173
+Frontend: `http://localhost:5173`
 
 ## Security
 
@@ -187,6 +199,6 @@ This project provided practical experience in:
 
 ## Author
 
-Gokul Krishna N
+**Gokul Krishna N**
 
 Full-stack project developed using Java, Spring Boot, React, and MySQL.
